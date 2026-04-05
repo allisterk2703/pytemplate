@@ -17,7 +17,8 @@ PROJECT_DIR := $(PWD)
 PROJECT_NAME := $(shell basename $(PROJECT_DIR))
 SRC_DIR := src
 
-VENV_PATH := $(PROJECT_DIR)/.venv
+VENV_PATH := $(HOME)/.venvs/pytemplate-env
+export UV_PROJECT_ENVIRONMENT := $(VENV_PATH)
 
 IMAGE_NAME := $(PROJECT_NAME)-image
 CONTAINER_NAME := $(PROJECT_NAME)-container
@@ -45,9 +46,10 @@ create-structure:  ## Create the project structure
 # ====================================================
 
 create-env: create-structure ## Create uv virtual environment
-	uv venv
+	mkdir -p $(HOME)/.venvs
+	uv venv $(VENV_PATH)
 	echo "$(GREEN)[SUCCESS]$(NC) uv virtual environment created successfully"
-	echo "source .venv/bin/activate" > .envrc
+	printf '%s\n' 'export UV_PROJECT_ENVIRONMENT="$$HOME/.venvs/pytemplate-env"' 'source "$$HOME/.venvs/pytemplate-env/bin/activate"' > .envrc
 	direnv allow
 	echo "$(BLUE)[INFO]$(NC) Run the following command to install dependencies:"
 	echo " make install-dependencies"
@@ -77,13 +79,13 @@ clean:  ## Remove temporary files
 
 lint:  ## Check code quality with Ruff (without fixing)
 	echo "$(BLUE)[INFO]$(NC) Checking code with Ruff..."
-	ruff check $(SRC_DIR)
+	uv run ruff check $(SRC_DIR)
 	echo "$(GREEN)[SUCCESS]$(NC) Code checked with Ruff"
 
 format:  ## Format Python code with Ruff (imports + formatting)
 	echo "$(BLUE)[INFO]$(NC) Formatting code with Ruff..."
-	ruff check $(SRC_DIR) --fix
-	ruff format $(SRC_DIR)
+	uv run ruff check $(SRC_DIR) --fix
+	uv run ruff format $(SRC_DIR)
 	echo "$(GREEN)[SUCCESS]$(NC) Code formatted with Ruff"
 
 
@@ -112,7 +114,7 @@ pre-commit: ## Run pre-commit hooks on all files
 
 run:  ## Run the project
 	echo "$(BLUE)[INFO]$(NC) Running the project..."
-	python main.py
+	uv run python main.py
 
 
 # ====================================================
