@@ -17,8 +17,7 @@ PROJECT_DIR := $(PWD)
 PROJECT_NAME := $(shell basename $(PROJECT_DIR))
 SRC_DIR := src
 
-VENV_PATH := $(HOME)/.venvs/pytemplate-env
-export UV_PROJECT_ENVIRONMENT := $(VENV_PATH)
+VENV_PATH := $(PROJECT_DIR)/.venv
 
 IMAGE_NAME := $(PROJECT_NAME)-image
 CONTAINER_NAME := $(PROJECT_NAME)-container
@@ -27,7 +26,7 @@ CONTAINER_NAME := $(PROJECT_NAME)-container
 
 help:  ## Show the list of available commands
 	echo "All available commands:"
-	echo "Project directory: $(VENV_PATH)"
+	echo "Virtual environment: $(VENV_PATH)"
 	grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  🔹 %-35s %s\n", $$1, $$2}'
 
 git-push:  # Push changes to Git repository
@@ -45,11 +44,10 @@ create-structure:  ## Create the project structure
 #  Virtual Environment
 # ====================================================
 
-create-env: create-structure ## Create uv virtual environment
-	mkdir -p $(HOME)/.venvs
+create-env: create-structure ## Create uv virtual environment (.venv in repo)
 	uv venv $(VENV_PATH)
 	echo "$(GREEN)[SUCCESS]$(NC) uv virtual environment created successfully"
-	printf '%s\n' 'export UV_PROJECT_ENVIRONMENT="$$HOME/.venvs/pytemplate-env"' 'source "$$HOME/.venvs/pytemplate-env/bin/activate"' > .envrc
+	printf '%s\n' 'source .venv/bin/activate' > .envrc
 	direnv allow
 	echo "$(BLUE)[INFO]$(NC) Run the following command to install dependencies:"
 	echo " make install-dependencies"

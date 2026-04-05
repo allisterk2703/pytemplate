@@ -4,13 +4,13 @@
 
 1. Set the desired Python version in `.python-version`
 
-2. Create the project environment (single venv at `~/.venvs/pytemplate-env`; uv uses `UV_PROJECT_ENVIRONMENT`) :
+2. Create the project virtual environment in the repo (`.venv`; c’est l’emplacement par défaut d’uv) :
 
    ```shell
    make create-env
    ```
 
-   Without direnv, run `export UV_PROJECT_ENVIRONMENT="$HOME/.venvs/pytemplate-env"` before `uv` commands in this repo.
+   Sans direnv, activez le venv avec `source .venv/bin/activate`, ou utilisez `uv run` / `uv sync` (uv utilise automatiquement `.venv` à la racine du projet).
 
 3. Add the required dependencies:
 
@@ -39,7 +39,7 @@
    Then add to `.vscode/settings.json`:
 
    ```
-   "sqlfluff.executablePath": "${userHome}/.venvs/pytemplate-env/bin/sqlfluff"
+   "sqlfluff.executablePath": "${workspaceFolder}/.venv/bin/sqlfluff"
    "sqlfluff.dialect": "athena"
    ```
 
